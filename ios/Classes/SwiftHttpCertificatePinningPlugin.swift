@@ -6,8 +6,6 @@ import Alamofire
 public class SwiftHttpCertificatePinningPlugin: NSObject, FlutterPlugin {
 
     let manager = Alamofire.SessionManager.default
-    var fingerprints: Array<String>?
-    var flutterResult: FlutterResult?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "http_certificate_pinning", binaryMessenger: registrar.messenger())
@@ -41,7 +39,7 @@ public class SwiftHttpCertificatePinningPlugin: NSObject, FlutterPlugin {
     ){
         guard let urlString = args["url"] as? String,
               let headers = args["headers"] as? Dictionary<String, String>,
-              let fingerprints = args["fingerprints"] as? Array<String>,
+              let fingerprints = args["fingerprints"] as? Array<String>?,
               let type = args["type"] as? String
         else {
             flutterResult(
@@ -54,7 +52,6 @@ public class SwiftHttpCertificatePinningPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        self.fingerprints = fingerprints
 
         var timeout = 60
         if let timeoutArg = args["timeout"] as? Int {
@@ -121,7 +118,7 @@ public class SwiftHttpCertificatePinningPlugin: NSObject, FlutterPlugin {
             }
 
             var isSecure = false
-            if var fp = self.fingerprints {
+            if var fp = fingerprints {
                 fp = fp.compactMap { (val) -> String? in
                     val.replacingOccurrences(of: " ", with: "")
             }
